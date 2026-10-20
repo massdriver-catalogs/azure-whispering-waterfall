@@ -1,6 +1,6 @@
-name: azure-databricks-workspace
+name: azure-databricks
 description: An Azure Databricks workspace with no compute. It stores the connection of the landing blob container in a secret scope, and adds a notebook that reads the container.
-source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-databricks-workspace
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-databricks
 version: 0.1.0
 params:
   examples:

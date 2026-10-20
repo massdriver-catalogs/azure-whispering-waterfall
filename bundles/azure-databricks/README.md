@@ -1,4 +1,4 @@
-# Azure Databricks Workspace
+# Azure Databricks
 
 This bundle creates an Azure Databricks workspace for a demo. It starts no
 compute, so it has no cost until somebody starts a cluster or a SQL warehouse.

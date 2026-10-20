@@ -21,7 +21,8 @@ resource "azurerm_databricks_workspace" "main" {
   tags                        = var.md_metadata.default_tags
 
   # Clusters get no public IP address. The control plane reaches them through
-  # secure cluster connectivity.
+  # secure cluster connectivity. In the managed network, Azure adds a NAT
+  # gateway for this, and the NAT gateway costs money every hour.
   custom_parameters {
     no_public_ip = true
   }
