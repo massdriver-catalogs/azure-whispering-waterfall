@@ -8,3 +8,4 @@
 - Deploy the code from a blob in the `packages` container or from an HTTPS URL. Azure Storage copies the package to `deployments/released-package.zip` on the server side.
 - Emit the `packages` resource, and write the function logs to the host storage account.
 - Make Application Insights optional.
+- Sync the function triggers on each deployment with a package.

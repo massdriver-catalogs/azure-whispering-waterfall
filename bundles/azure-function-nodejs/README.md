@@ -39,6 +39,11 @@ with a read-only SAS that expires after two hours. The Flex Consumption host
 runs that package. A new value of **Package URL** replaces the blob and
 restarts the app. Use a new blob name for each release.
 
+A copied package does not register its triggers with the Flex scale
+controller. On each deployment with a package, the runtime calls the ARM action
+`syncfunctiontriggers` with the `azapi` provider. Without this call, a queue
+trigger does not start an instance when a message arrives.
+
 ## Cost
 
 Flex Consumption has no fixed price. Azure charges for memory per second of
