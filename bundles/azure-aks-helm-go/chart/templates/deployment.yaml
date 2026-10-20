@@ -15,7 +15,7 @@ spec:
         {{- include "app.selector" . | nindent 8 }}
       annotations:
         # A change to an env or a secret restarts the pods.
-        checksum/config: {{ toJson (list .Values.envs .Values.secrets .Values.dependencies) | sha256sum }}
+        checksum/config: {{ toJson (list .Values.envs .Values.secrets) | sha256sum }}
     spec:
       automountServiceAccountToken: false
       securityContext:

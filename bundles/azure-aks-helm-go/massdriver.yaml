@@ -7,7 +7,7 @@ provides:
 params:
   examples:
     - __name: Demo (lowest cost)
-      image: ''
+      image: gcr.io/google-samples/hello-app:2.0
       namespace: apps
       replicas: 1
       port: 8080
@@ -28,7 +28,7 @@ params:
     image:
       type: string
       title: Container Image
-      description: The full reference of the container image, for example ghcr.io/acme/orders-processor:1.0.0.
+      description: The full reference of the container image, for example gcr.io/google-samples/hello-app:2.0.
       minLength: 1
     namespace:
       type: string
@@ -109,11 +109,11 @@ app:
     LOG_LEVEL: .params.log_level
     PORT: .params.port | tostring
 steps:
-  - path: chart
-    provisioner: helm
-    config:
-      namespace: .params.namespace
-      release_name: .params.md_metadata.name_prefix
+  # One OpenTofu step installs the local chart in ./chart with the Helm
+  # provider. Its outputs are an object, so an application can emit resources
+  # with a jq template on this step.
+  - path: src
+    provisioner: opentofu
 ui:
   ui:order:
     - image

@@ -28,12 +28,12 @@ resources:
     required: true
 
 steps:
-  - path: chart
+  - path: src
     resources:
       service:
         template: |
           {
-            name: .params.md_metadata.name_prefix,
-            namespace: .params.namespace,
-            url: ("http://" + .params.md_metadata.name_prefix + "." + .params.namespace + ".svc.cluster.local")
+            name: .outputs.name,
+            namespace: .outputs.namespace,
+            url: .outputs.url
           }
