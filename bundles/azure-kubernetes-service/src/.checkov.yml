@@ -22,3 +22,6 @@ skip-check:
   # An address range on the API server blocks the Massdriver provisioner, which
   # holds no fixed address. The private cluster parameter covers this risk.
   - CKV_AZURE_6
+  # This bundle creates no disk encryption set. Azure encrypts the disks with
+  # its own key.
+  - CKV_AZURE_117

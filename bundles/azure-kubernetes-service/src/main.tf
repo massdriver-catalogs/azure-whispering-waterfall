@@ -64,6 +64,14 @@ resource "azurerm_kubernetes_cluster" "main" {
     max_count            = var.max_nodes
     os_disk_size_gb      = 64
     max_pods             = 30
+
+    # Azure sets these values when it creates the pool. The block declares the
+    # same values, so that a deployment shows no change.
+    upgrade_settings {
+      max_surge                     = "10%"
+      drain_timeout_in_minutes      = 0
+      node_soak_duration_in_minutes = 0
+    }
   }
 
   identity {

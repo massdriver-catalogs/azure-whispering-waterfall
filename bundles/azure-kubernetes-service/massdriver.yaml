@@ -33,12 +33,12 @@ params:
       oneOf:
         - const: ''
           title: Azure default (recommended)
-        - const: '1.32'
-          title: '1.32'
-        - const: '1.33'
-          title: '1.33'
         - const: '1.34'
           title: '1.34'
+        - const: '1.35'
+          title: '1.35'
+        - const: '1.36'
+          title: '1.36'
     node_size:
       type: string
       title: Node Size

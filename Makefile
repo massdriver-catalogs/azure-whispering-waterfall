@@ -2,7 +2,7 @@
 
 # Publish order: platforms -> resource types -> infra bundles -> runtimes -> apps.
 # An app bundle builds on top of its runtime, so the runtime must be published first.
-INFRA_BUNDLES = azure-virtual-network azure-kubernetes-service azure-storage-account azure-storage-queue azure-databricks-workspace
+INFRA_BUNDLES = azure-vnet azure-kubernetes-service azure-storage-account azure-queue azure-databricks
 RUNTIMES      = azure-function-nodejs azure-aks-helm-go
 APPS          = azure-orders-api azure-orders-processor azure-orders-worker
 RESOURCE_TYPES = $(shell find resource-types -mindepth 1 -maxdepth 1 -type d -exec basename {} \;)

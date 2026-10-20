@@ -8,3 +8,4 @@
 - Remove the optional key vault and the disk encryption set.
 - Use the default Kubernetes version of Azure when the version field is empty.
 - Set the lowest cost defaults: `Standard_B2ms` nodes, 1 to 2 nodes, Free tier.
+- Declare the node pool upgrade settings, so that a deployment with no change shows no plan change.

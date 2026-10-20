@@ -1,6 +1,6 @@
-name: azure-virtual-network
+name: azure-vnet
 description: An Azure virtual network with a resource group and delegated subnets. Each PaaS service gets its own subnet.
-source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-virtual-network
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-vnet
 version: 0.1.0
 params:
   examples:
