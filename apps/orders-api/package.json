@@ -1,0 +1,18 @@
+{
+  "name": "orders-api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/src/functions/*.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist orders-api.zip",
+    "package": "npm run clean && npm run build && zip -r orders-api.zip host.json package.json dist node_modules -x 'node_modules/typescript/*' 'node_modules/@types/*' 'node_modules/.bin/*'"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

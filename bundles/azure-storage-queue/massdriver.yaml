@@ -1,0 +1,80 @@
+name: azure-storage-queue
+description: An Azure Storage queue and its poison queue. A producer sends messages, and a consumer reads them with the connection string.
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-storage-queue
+version: 0.1.0
+params:
+  examples:
+    - __name: Demo (lowest cost)
+      region: eastus2
+      queue_name: events
+      redundancy: Standard_LRS
+    - __name: Production
+      region: eastus2
+      queue_name: events
+      redundancy: Standard_ZRS
+  required:
+    - region
+    - queue_name
+    - redundancy
+  properties:
+    region:
+      type: string
+      title: Region
+      description: The Azure region that holds the queue. Azure cannot move the account to another region.
+      default: eastus2
+      $md.immutable: true
+      oneOf:
+        - const: eastus
+          title: East US (Virginia)
+        - const: eastus2
+          title: East US 2 (Virginia)
+        - const: centralus
+          title: Central US (Iowa)
+        - const: westus2
+          title: West US 2 (Washington)
+        - const: westus3
+          title: West US 3 (Arizona)
+        - const: northeurope
+          title: North Europe (Ireland)
+        - const: westeurope
+          title: West Europe (Netherlands)
+    queue_name:
+      type: string
+      title: Queue Name
+      description: The name of the queue. Azure cannot rename a queue.
+      default: events
+      minLength: 3
+      maxLength: 56
+      pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
+      message:
+        pattern: Must be lowercase letters, digits, and hyphens. It must start and end with a letter or a digit.
+      $md.immutable: true
+    redundancy:
+      type: string
+      title: Redundancy
+      description: The number of copies that Azure keeps, and their locations.
+      default: Standard_LRS
+      oneOf:
+        - const: Standard_LRS
+          title: Local (3 copies, one data center) — lowest cost
+        - const: Standard_ZRS
+          title: Zone (3 copies, three zones) — survives a zone failure
+dependencies:
+  azure_service_principal:
+    resource_type: azure-service-principal@0.1.0
+    required: true
+resources:
+  queue:
+    resource_type: azure-storage-queue@0.1.0
+    required: true
+steps:
+  - path: src
+    provisioner: opentofu:1.10
+ui:
+  ui:order:
+    - region
+    - queue_name
+    - redundancy
+    - '*'
+  queue_name:
+    ui:help: The Azure Functions queue trigger moves a failed message to <queue name>-poison. The bundle creates that queue too.

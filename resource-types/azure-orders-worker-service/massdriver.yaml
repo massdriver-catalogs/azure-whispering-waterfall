@@ -1,0 +1,27 @@
+name: azure-orders-worker-service
+version: 0.1.0
+label: Orders Worker Service
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-app-service/icon.svg
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: Orders Worker Service
+  description: The Orders Worker Function app. It reads order events from the queue.
+  type: object
+  additionalProperties: false
+  required:
+    - name
+    - function_app_id
+  properties:
+    name:
+      title: Name
+      description: The name of the Function app.
+      type: string
+      minLength: 1
+    function_app_id:
+      title: Function App ID
+      description: The Azure resource ID of the Function app.
+      type: string
+      minLength: 1

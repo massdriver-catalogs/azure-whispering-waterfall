@@ -1,0 +1,27 @@
+name: azure-orders-api-service
+version: 0.1.0
+label: Orders API Service
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-app-service/icon.svg
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: Orders API Service
+  description: The Orders API Function app. A consumer calls it at the URL.
+  type: object
+  additionalProperties: false
+  required:
+    - name
+    - url
+  properties:
+    name:
+      title: Name
+      description: The name of the Function app.
+      type: string
+      minLength: 1
+    url:
+      title: URL
+      description: The base URL of the Orders API.
+      type: string
+      pattern: ^https://

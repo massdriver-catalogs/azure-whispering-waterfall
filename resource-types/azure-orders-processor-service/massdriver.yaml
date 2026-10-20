@@ -1,0 +1,33 @@
+name: azure-orders-processor-service
+version: 0.1.0
+label: Orders Processor Service
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-kubernetes-service/icon.svg
+
+ui:
+  connectionOrientation: link
+
+schema:
+  title: Orders Processor Service
+  description: The Orders Processor service on AKS.
+  type: object
+  additionalProperties: false
+  required:
+    - name
+    - url
+    - namespace
+  properties:
+    name:
+      title: Name
+      description: The name of the Kubernetes service.
+      type: string
+      minLength: 1
+    url:
+      title: URL
+      description: The URL of the service inside the cluster.
+      type: string
+      pattern: ^https?://
+    namespace:
+      title: Namespace
+      description: The Kubernetes namespace that holds the service.
+      type: string
+      minLength: 1

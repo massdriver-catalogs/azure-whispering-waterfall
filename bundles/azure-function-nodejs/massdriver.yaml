@@ -1,0 +1,104 @@
+name: azure-function-nodejs
+description: A runtime for Node.js 22 (TypeScript) Azure Function apps on the Flex Consumption plan. An application bundle extends it with its own dependencies, environment variables, and resources.
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-function-nodejs
+version: 0.1.0
+provides:
+  - runtime
+params:
+  examples:
+    - __name: Demo (lowest cost)
+      region: eastus2
+      package_url: ''
+      instance_memory_mb: 2048
+      maximum_instance_count: 40
+      log_level: info
+  required:
+    - region
+    - instance_memory_mb
+    - maximum_instance_count
+    - log_level
+  properties:
+    region:
+      type: string
+      title: Region
+      description: The Azure region that holds the Function app. Azure cannot move a Function app to another region.
+      default: eastus2
+      $md.immutable: true
+      oneOf:
+        - const: eastus
+          title: East US (Virginia)
+        - const: eastus2
+          title: East US 2 (Virginia)
+        - const: centralus
+          title: Central US (Iowa)
+        - const: westus2
+          title: West US 2 (Washington)
+        - const: westus3
+          title: West US 3 (Arizona)
+        - const: northeurope
+          title: North Europe (Ireland)
+        - const: westeurope
+          title: West Europe (Netherlands)
+    package_url:
+      type: string
+      title: Package URL
+      default: ''
+      description: An HTTPS URL to the zip package of the compiled Function app. Leave it empty to deploy the code later with `func azure functionapp publish`.
+      pattern: ^(https://.+)?$
+      message:
+        pattern: Must be empty or start with https://.
+    instance_memory_mb:
+      type: integer
+      title: Instance Memory (MB)
+      description: The memory of one instance. Azure charges for memory per second of execution.
+      default: 2048
+      oneOf:
+        - const: 512
+          title: 512 MB — lowest cost
+        - const: 2048
+          title: 2048 MB — default
+        - const: 4096
+          title: 4096 MB
+    maximum_instance_count:
+      type: integer
+      title: Maximum Instances
+      description: The largest number of instances that Azure starts for this app.
+      default: 40
+      minimum: 40
+      maximum: 1000
+    log_level:
+      type: string
+      title: Log Level
+      description: The lowest level of log message that the app writes.
+      default: info
+      oneOf:
+        - const: debug
+          title: Debug
+        - const: info
+          title: Info
+        - const: warn
+          title: Warn
+        - const: error
+          title: Error
+dependencies:
+  azure_service_principal:
+    resource_type: azure-service-principal@0.1.0
+    required: true
+app:
+  envs:
+    LOG_LEVEL: .params.log_level
+steps:
+  - path: src
+    provisioner: opentofu:1.10
+ui:
+  ui:order:
+    - region
+    - package_url
+    - instance_memory_mb
+    - maximum_instance_count
+    - log_level
+    - '*'
+  package_url:
+    ui:help: Build the zip with `npm run package` in the app source directory, upload it to a place that Azure can read, and paste the URL here.
+  maximum_instance_count:
+    ui:widget: updown

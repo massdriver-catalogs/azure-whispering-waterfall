@@ -1,0 +1,15 @@
+# The service has an address inside the cluster only.
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "app.name" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "app.selector" . | nindent 4 }}
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

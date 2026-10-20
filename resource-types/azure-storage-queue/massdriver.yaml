@@ -1,0 +1,65 @@
+name: azure-storage-queue
+version: 0.1.0
+label: Azure Storage Queue
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-storage-account/icon.svg
+
+ui:
+  connectionOrientation: link
+  environmentDefaultGroup: queues
+  instructions:
+    - label: Azure Storage Queue
+      path: ./instructions/Azure Storage Queue.md
+
+schema:
+  title: Azure Storage Queue
+  description: One Azure Storage queue. A producer sends messages to it, and a consumer reads them with the connection string.
+  type: object
+  additionalProperties: false
+  required:
+    - id
+    - name
+    - account_name
+    - queue_url
+    - connection_string
+  properties:
+    id:
+      title: ID
+      description: The Azure resource ID of the queue.
+      type: string
+      minLength: 1
+    name:
+      title: Queue Name
+      description: The name of the queue.
+      type: string
+      minLength: 3
+      maxLength: 63
+      pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
+    account_name:
+      title: Account Name
+      description: The name of the storage account that holds the queue.
+      type: string
+      minLength: 3
+      maxLength: 24
+    account_id:
+      title: Account ID
+      description: The Azure resource ID of the storage account.
+      type: string
+    queue_url:
+      title: Queue URL
+      description: The URL of the queue.
+      type: string
+      pattern: ^https://
+    poison_queue_name:
+      title: Poison Queue Name
+      description: The queue that receives a message after the consumer fails to process it too many times.
+      type: string
+    region:
+      title: Region
+      description: The Azure region that holds the storage account.
+      type: string
+    connection_string:
+      title: Connection String
+      description: The primary connection string of the storage account. It gives full access to the account.
+      type: string
+      minLength: 1
+      $md.sensitive: true

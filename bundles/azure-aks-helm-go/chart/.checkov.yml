@@ -1,0 +1,6 @@
+# Each skip carries the reason that the check does not apply to this chart.
+skip-check:
+  # The image reference is a param. The operator selects a tag or a digest.
+  - CKV_K8S_43
+  # The chart reads the namespace from the Helm release. Massdriver sets it.
+  - CKV_K8S_21

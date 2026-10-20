@@ -1,0 +1,131 @@
+name: azure-aks-helm-go
+description: A runtime for Go services on Azure Kubernetes Service, deployed with Helm. An application bundle extends it with its own dependencies, environment variables, and resources.
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-aks-helm-go
+version: 0.1.0
+provides:
+  - runtime
+params:
+  examples:
+    - __name: Demo (lowest cost)
+      image: ''
+      namespace: apps
+      replicas: 1
+      port: 8080
+      health_check_path: /healthz
+      cpu: 50m
+      memory: 64Mi
+      log_level: info
+  required:
+    - image
+    - namespace
+    - replicas
+    - port
+    - health_check_path
+    - cpu
+    - memory
+    - log_level
+  properties:
+    image:
+      type: string
+      title: Container Image
+      description: The full reference of the container image, for example ghcr.io/acme/orders-processor:1.0.0.
+      minLength: 1
+    namespace:
+      type: string
+      title: Namespace
+      description: The Kubernetes namespace of the service. Massdriver creates it if it does not exist.
+      default: apps
+      pattern: ^[a-z0-9]([a-z0-9-]*[a-z0-9])?$
+      maxLength: 63
+      $md.immutable: true
+    replicas:
+      type: integer
+      title: Replicas
+      description: The number of pods.
+      default: 1
+      minimum: 1
+      maximum: 10
+    port:
+      type: integer
+      title: Container Port
+      description: The port that the Go service listens on. The runtime sets the PORT environment variable to this value.
+      default: 8080
+      minimum: 1024
+      maximum: 65535
+    health_check_path:
+      type: string
+      title: Health Check Path
+      description: The HTTP path that answers 200 when the service is healthy.
+      default: /healthz
+      pattern: ^/
+    cpu:
+      type: string
+      title: CPU Request
+      description: The processor that Kubernetes reserves for one pod. The limit is four times this value.
+      default: 50m
+      oneOf:
+        - const: 50m
+          title: 50m — lowest cost
+        - const: 100m
+          title: 100m
+        - const: 250m
+          title: 250m
+        - const: 500m
+          title: 500m
+    memory:
+      type: string
+      title: Memory
+      description: The memory request and limit of one pod. A Go service usually needs little memory.
+      default: 64Mi
+      oneOf:
+        - const: 64Mi
+          title: 64 MiB
+        - const: 128Mi
+          title: 128 MiB
+        - const: 256Mi
+          title: 256 MiB
+        - const: 512Mi
+          title: 512 MiB
+    log_level:
+      type: string
+      title: Log Level
+      description: The lowest level of log message that the service writes.
+      default: info
+      oneOf:
+        - const: debug
+          title: Debug
+        - const: info
+          title: Info
+        - const: warn
+          title: Warn
+        - const: error
+          title: Error
+dependencies:
+  kubernetes_cluster:
+    resource_type: azure-aks-cluster@0.1.0
+    required: true
+app:
+  envs:
+    LOG_LEVEL: .params.log_level
+    PORT: .params.port | tostring
+steps:
+  - path: chart
+    provisioner: helm
+    config:
+      namespace: .params.namespace
+      release_name: .params.md_metadata.name_prefix
+ui:
+  ui:order:
+    - image
+    - namespace
+    - replicas
+    - port
+    - health_check_path
+    - cpu
+    - memory
+    - log_level
+    - '*'
+  replicas:
+    ui:widget: updown
+  image:
+    ui:help: Build the image with the Dockerfile in the app source directory, and push it to a registry that the cluster can read.

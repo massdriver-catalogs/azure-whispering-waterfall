@@ -1,0 +1,10 @@
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate*
+_massdriver_variables.tf
+schema-*.json
+.massdriver/
+*.zip
+node_modules/
+dist/
+.DS_Store

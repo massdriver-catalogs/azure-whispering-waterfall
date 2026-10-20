@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.name" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "app.selector" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selector" . | nindent 8 }}
+      annotations:
+        # A change to an env or a secret restarts the pods.
+        checksum/config: {{ toJson (list .Values.envs .Values.secrets .Values.dependencies) | sha256sum }}
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: {{ required "The image param is empty." .Values.image | quote }}
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: {{ .Values.port }}
+          env:
+            {{- range $name, $value := .Values.envs }}
+            - name: {{ $name }}
+              value: {{ $value | toString | quote }}
+            {{- end }}
+          envFrom:
+            - secretRef:
+                name: {{ include "app.name" . }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.health_check_path }}
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.health_check_path }}
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: {{ .Values.cpu }}
+              memory: {{ .Values.memory }}
+            limits:
+              cpu: {{ mul (trimSuffix "m" .Values.cpu | atoi) 4 }}m
+              memory: {{ .Values.memory }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL

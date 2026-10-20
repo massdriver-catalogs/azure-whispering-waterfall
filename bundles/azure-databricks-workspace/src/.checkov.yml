@@ -1,0 +1,5 @@
+# Each skip carries the reason that the check does not apply to this bundle.
+skip-check:
+  # The workspace runs in the managed network of Databricks. This catalog
+  # connects no virtual network to it.
+  - CKV2_AZURE_48

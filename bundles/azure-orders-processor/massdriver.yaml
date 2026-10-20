@@ -1,0 +1,39 @@
+name: azure-orders-processor
+description: The Orders Processor. A Go service on AKS. It calls the Orders API, writes order events to the queue, and writes receipts to blob storage. It runs on the azure-aks-helm-go runtime.
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/apps/orders-processor
+version: 0.1.0
+
+app:
+  runtime: azure-aks-helm-go@latest+dev
+  envs:
+    SERVICE_NAME: .params.md_metadata.name_prefix
+    ORDERS_API_URL: .dependencies.orders_api.url
+    EVENTS_QUEUE_NAME: .dependencies.events.name
+    RECEIPTS_CONTAINER: .dependencies.receipts.container
+
+dependencies:
+  orders_api:
+    resource_type: azure-orders-api-service@0.1.0
+    required: true
+  events:
+    resource_type: azure-storage-queue@0.1.0
+    required: true
+  receipts:
+    resource_type: azure-blob-storage@0.1.0
+    required: true
+
+resources:
+  service:
+    resource_type: azure-orders-processor-service@0.1.0
+    required: true
+
+steps:
+  - path: chart
+    resources:
+      service:
+        template: |
+          {
+            name: .params.md_metadata.name_prefix,
+            namespace: .params.namespace,
+            url: ("http://" + .params.md_metadata.name_prefix + "." + .params.namespace + ".svc.cluster.local")
+          }

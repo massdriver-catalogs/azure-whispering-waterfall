@@ -1,0 +1,14 @@
+# Each skip carries the reason that the check does not apply to this bundle.
+skip-check:
+  # Producers and consumers connect with the connection string, which needs
+  # the shared access key. The resource type of this catalog carries that string.
+  - CKV2_AZURE_40
+  # The producers and consumers of this catalog run outside a virtual network.
+  # A private endpoint or a deny rule would block them.
+  - CKV2_AZURE_33
+  - CKV_AZURE_59
+  - CKV_AZURE_35
+  # The account holds queues only. It holds no blob, so blob logs and blob
+  # retention do not apply.
+  - CKV2_AZURE_21
+  - CKV2_AZURE_38

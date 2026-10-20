@@ -1,0 +1,11 @@
+# Each skip carries the reason that the check does not apply to this bundle.
+skip-check:
+  # The host storage account holds the Function host state only. The Flex
+  # Consumption host connects to it with the connection string, which needs the
+  # shared access key.
+  - CKV2_AZURE_40
+  # The Function apps of this catalog run outside a virtual network. A private
+  # endpoint or a deny rule on the host storage account would block the host.
+  - CKV2_AZURE_33
+  - CKV_AZURE_59
+  - CKV_AZURE_35

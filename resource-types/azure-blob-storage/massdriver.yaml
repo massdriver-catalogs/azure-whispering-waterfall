@@ -1,0 +1,58 @@
+name: azure-blob-storage
+version: 0.1.0
+label: Azure Blob Storage
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-storage-account/icon.svg
+
+ui:
+  connectionOrientation: link
+  environmentDefaultGroup: storage
+  instructions:
+    - label: Azure Blob Storage
+      path: ./instructions/Azure Blob Storage.md
+
+schema:
+  title: Azure Blob Storage
+  description: A storage account and one blob container. An application reads and writes blobs with the connection string.
+  type: object
+  additionalProperties: false
+  required:
+    - id
+    - name
+    - container
+    - endpoint
+    - connection_string
+  properties:
+    id:
+      title: ID
+      description: The Azure resource ID of the storage account.
+      type: string
+      minLength: 1
+    name:
+      title: Account Name
+      description: The name of the storage account.
+      type: string
+      minLength: 3
+      maxLength: 24
+    container:
+      title: Container
+      description: The name of the blob container.
+      type: string
+      minLength: 3
+      maxLength: 63
+    endpoint:
+      title: Container URL
+      description: The URL of the blob container.
+      type: string
+      pattern: ^https://
+      message:
+        pattern: "Must start with https://."
+    region:
+      title: Region
+      description: The Azure region that holds the storage account.
+      type: string
+    connection_string:
+      title: Connection String
+      description: The primary connection string of the storage account. It gives full access to the account.
+      type: string
+      minLength: 1
+      $md.sensitive: true

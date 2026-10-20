@@ -1,0 +1,56 @@
+name: azure-databricks-workspace
+version: 0.1.0
+label: Azure Databricks Workspace
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-data-factory/icon.svg
+
+ui:
+  connectionOrientation: link
+  environmentDefaultGroup: analytics
+  instructions:
+    - label: Azure Databricks
+      path: ./instructions/Azure Databricks.md
+
+schema:
+  title: Azure Databricks Workspace
+  description: An Azure Databricks workspace and the schema (database) that holds the demo tables.
+  type: object
+  additionalProperties: false
+  required:
+    - id
+    - name
+    - workspace_url
+  properties:
+    id:
+      title: ID
+      description: The Azure resource ID of the workspace.
+      type: string
+      minLength: 1
+    name:
+      title: Name
+      description: The name of the workspace.
+      type: string
+    region:
+      title: Region
+      description: The Azure region that holds the workspace.
+      type: string
+    workspace_id:
+      title: Workspace ID
+      description: The numeric ID of the workspace.
+      type: string
+    workspace_url:
+      title: Workspace URL
+      description: The URL of the workspace.
+      type: string
+      pattern: ^https://
+    managed_resource_group:
+      title: Managed Resource Group
+      description: The resource group that Databricks manages for the compute.
+      type: string
+    catalog:
+      title: Catalog
+      description: The catalog that holds the schema.
+      type: string
+    schema:
+      title: Schema
+      description: The schema (database) that holds the demo tables.
+      type: string

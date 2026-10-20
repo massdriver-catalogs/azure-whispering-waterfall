@@ -1,0 +1,52 @@
+name: azure-databricks-workspace
+description: An Azure Databricks workspace with no compute. It stores the connection of the landing blob container in a secret scope, and adds a notebook that reads the container.
+source_url: https://github.com/massdriver-catalogs/azure/tree/main/bundles/azure-databricks-workspace
+version: 0.1.0
+params:
+  examples:
+    - __name: Demo (lowest cost)
+      region: eastus2
+  required:
+    - region
+  properties:
+    region:
+      type: string
+      title: Region
+      description: The Azure region that holds the workspace. Azure cannot move a workspace to another region.
+      default: eastus2
+      $md.immutable: true
+      oneOf:
+        - const: eastus
+          title: East US (Virginia)
+        - const: eastus2
+          title: East US 2 (Virginia)
+        - const: centralus
+          title: Central US (Iowa)
+        - const: westus2
+          title: West US 2 (Washington)
+        - const: westus3
+          title: West US 3 (Arizona)
+        - const: northeurope
+          title: North Europe (Ireland)
+        - const: westeurope
+          title: West Europe (Netherlands)
+dependencies:
+  azure_service_principal:
+    resource_type: azure-service-principal@0.1.0
+    required: true
+  landing:
+    resource_type: azure-blob-storage@0.1.0
+    required: false
+resources:
+  workspace:
+    resource_type: azure-databricks-workspace@0.1.0
+    required: true
+steps:
+  - path: src
+    provisioner: opentofu:1.10
+ui:
+  ui:order:
+    - region
+    - '*'
+  region:
+    ui:help: Use the region of the landing blob container. Traffic between regions costs money.

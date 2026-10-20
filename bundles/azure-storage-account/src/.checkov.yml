@@ -1,0 +1,12 @@
+# Each skip carries the reason that the check does not apply to this bundle.
+skip-check:
+  # Consumers connect with the connection string, which needs the shared
+  # access key. The resource type of this catalog carries that string.
+  - CKV2_AZURE_40
+  # The consumers of this catalog run outside a virtual network. A private
+  # endpoint or a deny rule would block them.
+  - CKV2_AZURE_33
+  - CKV_AZURE_59
+  - CKV_AZURE_35
+  # The account holds no queue. Only the blob service is in use.
+  - CKV_AZURE_33

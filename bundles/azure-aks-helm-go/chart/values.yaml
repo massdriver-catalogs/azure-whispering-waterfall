@@ -1,0 +1,14 @@
+# Massdriver replaces these values at deploy time with the params, the
+# dependencies (see connections.jq), the envs, and the secrets of the instance.
+image: ""
+replicas: 1
+port: 8080
+health_check_path: /healthz
+cpu: 50m
+memory: 64Mi
+md_metadata:
+  name_prefix: ""
+  default_tags: {}
+envs: {}
+secrets: {}
+dependencies: {}

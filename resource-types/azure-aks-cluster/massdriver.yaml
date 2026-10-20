@@ -1,0 +1,92 @@
+name: azure-aks-cluster
+version: 0.1.0
+label: Azure AKS Cluster
+icon: https://raw.githubusercontent.com/massdriver-catalogs/azure/main/bundles/azure-kubernetes-service/icon.svg
+
+ui:
+  connectionOrientation: link
+  environmentDefaultGroup: clusters
+  instructions:
+    - label: Azure Kubernetes Service
+      path: ./instructions/Azure Kubernetes Service.md
+
+exports:
+  - downloadButtonText: Kube Config
+    fileFormat: yaml
+    templatePath: ./exports/kubeconfig.yaml.liquid
+    templateLang: liquid
+
+schema:
+  title: Azure AKS Cluster
+  description: An Azure Kubernetes Service cluster. A Helm bundle deploys onto it with the token in the authentication block.
+  type: object
+  additionalProperties: false
+  required:
+    - id
+    - name
+    - region
+    - resource_group
+    - authentication
+  properties:
+    id:
+      title: ID
+      description: The Azure resource ID of the cluster.
+      type: string
+      minLength: 1
+    name:
+      title: Name
+      description: The name of the cluster.
+      type: string
+      minLength: 1
+    region:
+      title: Region
+      description: The Azure region that holds the cluster.
+      type: string
+    version:
+      title: Kubernetes Version
+      description: The version of the control plane.
+      type: string
+    resource_group:
+      title: Resource Group
+      description: The resource group that holds the cluster.
+      type: string
+    node_resource_group:
+      title: Node Resource Group
+      description: The resource group that Azure manages for the nodes, the disks, and the load balancers.
+      type: string
+    authentication:
+      title: Authentication
+      description: The token authentication that the Massdriver Helm provisioner reads.
+      type: object
+      additionalProperties: false
+      required:
+        - cluster
+        - user
+      properties:
+        cluster:
+          type: object
+          additionalProperties: false
+          required:
+            - server
+            - certificate-authority-data
+          properties:
+            server:
+              title: API Server
+              description: The URL of the Kubernetes API server.
+              type: string
+              pattern: ^https://
+            certificate-authority-data:
+              title: Certificate Authority
+              description: The base64 encoded certificate authority of the cluster.
+              type: string
+        user:
+          type: object
+          additionalProperties: false
+          required:
+            - token
+          properties:
+            token:
+              title: Token
+              description: The bearer token of the Massdriver deployer service account.
+              type: string
+              $md.sensitive: true
