@@ -4,34 +4,50 @@ templating: mustache
 
 # Function App Runbook
 
-## Read the logs
+{{#resources.packages}}
+## Upload a new package
+
+Build the zip in the app source directory, then upload it with the SAS of the
+`packages` resource. Copy the `SharedAccessSignature` value of the connection
+string into `SAS`.
 
 ```bash
-az monitor app-insights query \
-  --app {{params.md_metadata.name_prefix}} \
-  --resource-group {{params.md_metadata.name_prefix}} \
-  --analytics-query "traces | order by timestamp desc | take 50"
+npm ci && npm run package
+SAS='<SharedAccessSignature value>'
+curl -sf -X PUT -H "x-ms-blob-type: BlockBlob" \
+  --data-binary @<app>.zip \
+  "{{resources.packages.endpoint}}/<app>-<version>.zip?$SAS"
 ```
+
+Set **Package URL** to `<app>-<version>.zip` and deploy.
+
+## Read the function logs
+
+The diagnostic setting writes the logs to the host storage account. The first
+logs arrive 5 to 10 minutes after an invocation.
+
+```bash
+curl -s "https://{{resources.packages.name}}.blob.core.windows.net/insights-logs-functionapplogs?restype=container&comp=list&$SAS" \
+  | grep -o '<Name>[^<]*</Name>' | tail -5
+```
+{{/resources.packages}}
 
 ## The app answers HTTP 404 on every route
 
-The Function app holds no code. Set **Package URL** and deploy again, or
-publish the code from the app source directory.
-
-```bash
-npm ci && npm run build
-func azure functionapp publish {{params.md_metadata.name_prefix}}
-```
+The Function app holds no code, or the package has no functions. Check that
+**Package URL** is set. Check that the zip holds `host.json`, `package.json`,
+`dist/`, and `node_modules/@azure/functions` at the root.
 
 ## The deployment fails with "The package URL did not return HTTP 200"
 
-Azure cannot read the package URL. Open the URL in a private browser window.
-A private GitHub release or a blob without a SAS token returns 404 or 403.
-
-## Read the app settings
+The blob does not exist in the `packages` container, or the URL needs a
+sign-in. List the blobs:
 
 ```bash
-az functionapp config appsettings list \
-  --name {{params.md_metadata.name_prefix}} \
-  --resource-group {{params.md_metadata.name_prefix}} -o table
+curl -s "<packages endpoint>?restype=container&comp=list&$SAS" | grep -o '<Name>[^<]*</Name>'
 ```
+
+## The SAS of the packages resource expired
+
+The SAS expires 30 days after the last deployment. Deploy the app again with
+the same params to get a new SAS.

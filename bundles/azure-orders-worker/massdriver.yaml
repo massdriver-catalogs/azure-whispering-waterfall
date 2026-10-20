@@ -8,10 +8,17 @@ app:
   envs:
     SERVICE_NAME: .params.md_metadata.name_prefix
     EVENTS_QUEUE_NAME: .dependencies.events.name
+    # The queue trigger reads the connection string from this app setting.
+    EVENTS_CONNECTION_STRING: .dependencies.events.connection_string
+    DATABRICKS_HOST: .dependencies.lakehouse.workspace_url
+    DATABRICKS_WORKSPACE: .dependencies.lakehouse.name
 
 dependencies:
   events:
     resource_type: azure-storage-queue@0.1.0
+    required: true
+  lakehouse:
+    resource_type: azure-databricks-workspace@0.1.0
     required: true
 
 resources:

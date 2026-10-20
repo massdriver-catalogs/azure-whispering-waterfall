@@ -5,13 +5,9 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.30"
     }
-    http = {
-      source  = "hashicorp/http"
-      version = "~> 3.4"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.5"
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 2.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -26,6 +22,13 @@ terraform {
 
 provider "azurerm" {
   features {}
+  client_id       = var.azure_service_principal.client_id
+  tenant_id       = var.azure_service_principal.tenant_id
+  client_secret   = var.azure_service_principal.client_secret
+  subscription_id = var.azure_service_principal.subscription_id
+}
+
+provider "azapi" {
   client_id       = var.azure_service_principal.client_id
   tenant_id       = var.azure_service_principal.tenant_id
   client_secret   = var.azure_service_principal.client_secret

@@ -9,13 +9,15 @@ params:
     - __name: Demo (lowest cost)
       region: eastus2
       package_url: ''
-      instance_memory_mb: 2048
+      instance_memory_mb: 512
       maximum_instance_count: 40
+      application_insights: true
       log_level: info
   required:
     - region
     - instance_memory_mb
     - maximum_instance_count
+    - application_insights
     - log_level
   properties:
     region:
@@ -43,10 +45,10 @@ params:
       type: string
       title: Package URL
       default: ''
-      description: An HTTPS URL to the zip package of the compiled Function app. Leave it empty to deploy the code later with `func azure functionapp publish`.
-      pattern: ^(https://.+)?$
+      description: The zip package of the compiled Function app. Enter the name of a blob in the `packages` container of this app (for example `orders-api-0.1.0.zip`), or an HTTPS URL that Azure can read. Leave it empty on the first deployment, which creates the `packages` container.
+      pattern: ^((https://.+)|([A-Za-z0-9._/-]+\.zip))?$
       message:
-        pattern: Must be empty or start with https://.
+        pattern: Must be empty, a blob name that ends in .zip, or an HTTPS URL.
     instance_memory_mb:
       type: integer
       title: Instance Memory (MB)
@@ -66,6 +68,11 @@ params:
       default: 40
       minimum: 40
       maximum: 1000
+    application_insights:
+      type: boolean
+      title: Application Insights
+      description: Send traces and requests to Application Insights. Azure charges per GB of data.
+      default: true
     log_level:
       type: string
       title: Log Level
@@ -84,6 +91,10 @@ dependencies:
   azure_service_principal:
     resource_type: azure-service-principal@0.1.0
     required: true
+resources:
+  packages:
+    resource_type: azure-blob-storage@0.1.0
+    required: true
 app:
   envs:
     LOG_LEVEL: .params.log_level
@@ -96,9 +107,10 @@ ui:
     - package_url
     - instance_memory_mb
     - maximum_instance_count
+    - application_insights
     - log_level
     - '*'
   package_url:
-    ui:help: Build the zip with `npm run package` in the app source directory, upload it to a place that Azure can read, and paste the URL here.
+    ui:help: Build the zip with `npm run package` in the app source directory. Upload it to the `packages` container with the connection string of the `packages` resource, then enter the blob name here.
   maximum_instance_count:
     ui:widget: updown

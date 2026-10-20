@@ -1,14 +1,17 @@
 import { app, InvocationContext } from "@azure/functions";
 
-// The queue trigger reads one order event at a time. The runtime sets the app
-// setting EVENTS_CONNECTION_STRING from the `events` dependency, and
-// EVENTS_QUEUE_NAME from the app envs.
+// The queue trigger reads one order event at a time. The app envs set
+// EVENTS_CONNECTION_STRING and EVENTS_QUEUE_NAME from the `events` dependency,
+// and DATABRICKS_HOST and DATABRICKS_WORKSPACE from the `lakehouse` dependency.
+// The worker does not call Databricks. It writes the values to the log.
 export async function processOrder(message: unknown, context: InvocationContext): Promise<void> {
   const event = typeof message === "string" ? safeParse(message) : message;
   context.log(
     JSON.stringify({
       msg: "order event processed",
       worker: process.env.SERVICE_NAME ?? "orders-worker",
+      databricksHost: process.env.DATABRICKS_HOST,
+      databricksWorkspace: process.env.DATABRICKS_WORKSPACE,
       dequeueCount: context.triggerMetadata?.dequeueCount,
       event,
     }),

@@ -7,18 +7,20 @@ not deploy this runtime as a component.
 
 ## What the runtime creates
 
-- A resource group, a Log Analytics workspace, and Application Insights.
-- A host storage account with a `deployments` container.
-- A Flex Consumption plan (`FC1`) and a Function app on Node.js 22.
+- A resource group.
+- A host storage account with a `deployments` container and a `packages` container.
+- A Flex Consumption plan (`FC1`) and a Function app on Node.js 22. The app has no VNet integration.
+- Optional: a Log Analytics workspace and Application Insights.
+- A diagnostic setting that writes the function logs to the host storage account.
+- The `packages` resource (`azure-blob-storage`): the packages container, with a blob-only SAS connection string that expires 30 days after the last deployment.
 
 ## What an application bundle adds
 
 | Item | How |
 |---|---|
 | Dependencies | `dependencies:` in the application `massdriver.yaml`. |
-| Environment variables | `app.envs:` jq expressions. Each one becomes an app setting. |
+| Environment variables | `app.envs:` jq expressions. Each one becomes an app setting. Map a dependency field, such as a connection string, to an env. |
 | Secrets | `app.secrets:`. Each one becomes an app setting. |
-| Connection strings | Automatic. A connected dependency with a `connection_string` field becomes the app setting `<DEPENDENCY NAME>_CONNECTION_STRING`. |
 | Resources | `resources:` and a jq template on the `src` step. |
 
 The `src` step has these outputs for resource templates: `function_app_name`,
@@ -26,18 +28,19 @@ The `src` step has these outputs for resource templates: `function_app_name`,
 
 ## Code deployment
 
-Set **Package URL** to an HTTPS URL of the zip package. The bundle downloads the
-package and deploys it. A new package (a different file) starts a new
-deployment.
+1. Deploy the app one time with an empty **Package URL**. This creates the `packages` container.
+2. Build the zip with `npm run package` in the app source directory.
+3. Upload the zip to the `packages` container with the connection string of the `packages` resource.
+4. Set **Package URL** to the blob name, for example `orders-api-0.1.0.zip`, and deploy again.
 
-Leave the field empty to deploy the code yourself:
-
-```bash
-func azure functionapp publish <function app name>
-```
+**Package URL** also accepts an HTTPS URL that Azure can read. Azure Storage
+copies the package to `deployments/released-package.zip` on the server side,
+with a read-only SAS that expires after two hours. The Flex Consumption host
+runs that package. A new value of **Package URL** replaces the blob and
+restarts the app. Use a new blob name for each release.
 
 ## Cost
 
 Flex Consumption has no fixed price. Azure charges for memory per second of
-execution and per execution. The Log Analytics workspace charges per GiB of
-logs.
+execution and per execution. The host storage account and the Log Analytics
+workspace charge per GB.
