@@ -175,14 +175,17 @@ func (s *server) createOrder(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusBadGateway, map[string]string{"error": "enqueue: " + err.Error()})
 		return
 	}
+	out := map[string]any{"order": event, "queue": s.cfg.queueName}
+	// The receipt is best effort. The queue message is the order of record.
 	blobName := "receipts/" + event.OrderID + ".json"
 	if _, err := s.blobs.UploadBuffer(r.Context(), s.cfg.container, blobName, body, nil); err != nil {
 		s.logger.Error("receipt", "err", err)
-		writeJSON(w, http.StatusBadGateway, map[string]string{"error": "receipt: " + err.Error()})
-		return
+		out["receiptError"] = err.Error()
+	} else {
+		out["receipt"] = s.cfg.container + "/" + blobName
 	}
 	s.logger.Info("order created", "orderId", event.OrderID)
-	writeJSON(w, http.StatusAccepted, map[string]any{"order": event, "queue": s.cfg.queueName, "receipt": s.cfg.container + "/" + blobName})
+	writeJSON(w, http.StatusAccepted, out)
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {

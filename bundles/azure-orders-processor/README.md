@@ -12,6 +12,6 @@ The source and the Dockerfile are in `apps/orders-processor`.
 
 | Name | Resource type | Use |
 |---|---|---|
-| `orders_api` | `azure-orders-api-service` | `ORDERS_API_URL` |
+| `api` | `azure-orders-api-service` | `ORDERS_API_URL` |
 | `events` | `azure-storage-queue` | `EVENTS_QUEUE_NAME`, `EVENTS_CONNECTION_STRING` |
 | `receipts` | `azure-blob-storage` | `RECEIPTS_CONTAINER`, `RECEIPTS_CONNECTION_STRING` |
