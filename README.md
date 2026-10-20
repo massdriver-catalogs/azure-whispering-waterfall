@@ -34,23 +34,36 @@ The catalog is designed around two projects. A platform project owns the shared
 network and cluster. An application project holds the data services and the
 apps, and reaches the cluster through a remote reference.
 
+```mermaid
+flowchart LR
+  subgraph platform["Platform project"]
+    network["azure-network<br/><i>azure-vnet</i>"]
+    aks["azure-aks<br/><i>azure-kubernetes-service</i>"]
+    network --> aks
+  end
+
+  subgraph app["Application project"]
+    api["azure-api<br/><i>Function, Node.js</i>"]
+    processor["azure-processor<br/><i>AKS, Go</i>"]
+    events["azure-events<br/><i>queue</i>"]
+    receipts["azure-receipts<br/><i>blob storage</i>"]
+    worker["azure-worker<br/><i>Function, Node.js</i>"]
+    lakehouse["azure-lakehouse<br/><i>Databricks</i>"]
+    landing["azure-landing<br/><i>blob storage</i>"]
+
+    api -- "orders API URL" --> processor
+    events -- "queue (write)" --> processor
+    receipts --> processor
+    events -- "queue (read)" --> worker
+    lakehouse --> worker
+    landing --> lakehouse
+  end
+
+  aks -. "remote reference" .-> processor
 ```
-Platform project
-  azure-network (azure-vnet) ──▶ azure-aks (azure-kubernetes-service)
-                                        │
-                                        │ remote reference
-                                        ▼
-Application project
-  azure-api ─────────────▶ azure-processor ──▶ azure-events ──▶ azure-worker
-  (Function, Node.js)       (AKS, Go)           (queue)          (Function, Node.js)
-                                │                                    ▲
-                                ▼                                    │
-                           azure-receipts                       azure-lakehouse
-                           (blob storage)                       (Databricks)
-                                                                     ▲
-                                                azure-landing ───────┘
-                                                (blob storage)
-```
+
+Arrows point from the component that emits a resource to the component that
+consumes it.
 
 - `azure-api` emits an `azure-orders-api-service` resource with its URL.
   `azure-processor` consumes it, so the processor gets the API URL as an
