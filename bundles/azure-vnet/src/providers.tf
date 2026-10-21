@@ -13,7 +13,13 @@ terraform {
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    # Azure adds resources outside of OpenTofu (for example Container Insights
+    # or alert rules). Without this, the resource group delete fails.
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
   client_id       = var.azure_service_principal.client_id
   tenant_id       = var.azure_service_principal.tenant_id
   client_secret   = var.azure_service_principal.client_secret
